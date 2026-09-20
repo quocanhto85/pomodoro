@@ -28,16 +28,25 @@ export const STORAGE_KEYS = {
 // One pomodoro is defined as 25 minutes of focus across the whole app.
 export const MINUTES_PER_POMODORO = 25;
 
+// `shortLabel` is used where horizontal room is tight (e.g. the login switcher).
 export const THEMES = {
   classic: {
     id: "classic",
     label: "Classic Red",
+    shortLabel: "Classic",
     description: "The traditional warm Pomodoro look.",
   },
   cyberpunk: {
     id: "cyberpunk",
     label: "Cyberpunk HUD",
+    shortLabel: "Cyber",
     description: "Dark neon interface with glowing HUD controls.",
+  },
+  kitty: {
+    id: "kitty",
+    label: "Kitty Pink",
+    shortLabel: "Kitty",
+    description: "Pastel pink wallpaper with kittens, bows and hearts.",
   },
 } as const;
 

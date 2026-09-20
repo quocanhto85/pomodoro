@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="56" viewBox="0 0 96 56">
+  <!-- Ribbon bow that sits on top of the timer panel in the "Kitty Pink" theme. -->
+  <g transform="translate(48 30)">
+    <path d="M-3 0 L-30 -17 C-40 -22 -42 -2 -34 5 C-27 11 -12 8 -3 3 Z"
+          fill="#ff7cab" stroke="#e35590" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M3 0 L30 -17 C40 -22 42 -2 34 5 C27 11 12 8 3 3 Z"
+          fill="#ff7cab" stroke="#e35590" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M-20 -12 C-26 -8 -28 -2 -25 3" fill="none" stroke="#ffd4e4" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M20 -12 C26 -8 28 -2 25 3" fill="none" stroke="#ffd4e4" stroke-width="2.2" stroke-linecap="round"/>
+    <ellipse cx="0" cy="1" rx="8" ry="7.5" fill="#ffd4e4" stroke="#e35590" stroke-width="2.4"/>
+  </g>
+</svg>
