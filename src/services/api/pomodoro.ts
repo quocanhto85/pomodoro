@@ -44,6 +44,18 @@ export const pomodoroService = {
     }
   },
 
+  getRanking: async (year: number) => {
+    try {
+      const response = await axios.get("/api/pomodoro/ranking", {
+        params: { year }
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching pomodoro ranking:", error);
+      throw error;
+    }
+  },
+
   getSubjects: async () => {
     try {
       const response = await axios.get("/api/pomodoro/subjects");
