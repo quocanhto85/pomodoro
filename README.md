@@ -9,7 +9,8 @@ Live version: https://pomodoro-green-chi.vercel.app
 - Three timer modes: Pomodoro, Short Break and Long Break, with the long break kicking in after every four focus sessions.
 - Pick your focus length. Go with 25 minutes for classic Pomodoro, 50 if you want longer deep-work blocks (a 50 counts as two pomodoros), or drop into a plain count-up stopwatch when you don't feel like a fixed timer.
 - Tag each session with a subject (Work, AI, Math, whatever you're on) so the stats aren't just one big undifferentiated pile.
-- A reports view with Summary, Detail and Ranking tabs: total pomodoros, hours focused, how many days you actually showed up, and a monthly focus-hours chart.
+- A reports view with Summary and Detail tabs: total pomodoros, hours focused, how many days you actually showed up, and a monthly focus-hours chart.
+- A Ranking tab that puts everyone who uses the app side by side. It ranks on four things — focus hours, active days, best single day and longest streak — because ranking on volume alone just rewards whoever has the most free time. Each of the four tiles names its current champion and re-sorts the board when you tap it.
 - Three themes. Classic Red, a darker Cyberpunk HUD, and a pastel Kitty Pink one, and your pick sticks between visits.
 - Sign in with Google. Nothing to remember, and the session stays put after you close the tab.
 - A bell rings when a block ends, the browser tab title counts down while you work, and the favicon changes so you can tell at a glance whether the timer is running.
