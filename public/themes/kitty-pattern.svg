@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!--
+    Original cute-kitty wallpaper tile for the "Kitty Pink" theme.
+    Hand-drawn so the app ships no third-party character artwork.
+    Designed to tile seamlessly: every motif is kept clear of the edges.
+  -->
+  <defs>
+    <g id="kitty">
+      <path d="M-25 -11 L-33 -30 L-11 -22 Z" fill="#ffffff" stroke="#f79ac0" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M25 -11 L33 -30 L11 -22 Z" fill="#ffffff" stroke="#f79ac0" stroke-width="2.4" stroke-linejoin="round"/>
+      <ellipse cx="0" cy="0" rx="27" ry="22" fill="#ffffff" stroke="#f79ac0" stroke-width="2.4"/>
+      <g stroke="#f79ac0" stroke-width="1.7" stroke-linecap="round">
+        <path d="M-17 1 L-28 -2"/>
+        <path d="M-17 5.5 L-29 5.5"/>
+        <path d="M-17 10 L-28 13"/>
+        <path d="M17 1 L28 -2"/>
+        <path d="M17 5.5 L29 5.5"/>
+        <path d="M17 10 L28 13"/>
+      </g>
+      <ellipse cx="-9.5" cy="-1" rx="2.5" ry="3.5" fill="#6b3050"/>
+      <ellipse cx="9.5" cy="-1" rx="2.5" ry="3.5" fill="#6b3050"/>
+      <ellipse cx="0" cy="6" rx="3.2" ry="2.3" fill="#ffc861"/>
+      <g transform="translate(19 -16)">
+        <path d="M0 0 L-11 -7 L-11 7 Z" fill="#ff7cab" stroke="#e35590" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M0 0 L11 -7 L11 7 Z" fill="#ff7cab" stroke="#e35590" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="0" cy="0" r="3.3" fill="#ffd4e4" stroke="#e35590" stroke-width="1.3"/>
+      </g>
+    </g>
+    <path id="heart" d="M0 7 C-9 0.5 -8.5 -8 -3.6 -8 C-1.4 -8 0 -6 0 -4.6 C0 -6 1.4 -8 3.6 -8 C8.5 -8 9 0.5 0 7 Z" fill="#ff7cab"/>
+    <g id="paw">
+      <ellipse cx="0" cy="2.2" rx="4.4" ry="3.8" fill="#ffaccb"/>
+      <circle cx="-4.6" cy="-3.2" r="1.9" fill="#ffaccb"/>
+      <circle cx="0" cy="-5.2" r="1.9" fill="#ffaccb"/>
+      <circle cx="4.6" cy="-3.2" r="1.9" fill="#ffaccb"/>
+    </g>
+    <path id="sparkle" d="M0 -8 C1 -2.6 2.6 -1 8 0 C2.6 1 1 2.6 0 8 C-1 2.6 -2.6 1 -8 0 C-2.6 -1 -1 -2.6 0 -8 Z" fill="#ffc2da"/>
+  </defs>
+
+  <g opacity="0.48">
+    <use href="#kitty" transform="translate(52 54)"/>
+    <use href="#kitty" transform="translate(152 154)"/>
+    <use href="#heart" transform="translate(150 46) scale(1.25)"/>
+    <use href="#heart" transform="translate(50 146) scale(1.25)"/>
+    <use href="#paw" transform="translate(104 16)"/>
+    <use href="#paw" transform="translate(96 186)"/>
+    <use href="#sparkle" transform="translate(16 106) scale(0.9)"/>
+    <use href="#sparkle" transform="translate(184 92) scale(0.9)"/>
+    <use href="#sparkle" transform="translate(120 112) scale(0.6)"/>
+    <use href="#sparkle" transform="translate(80 92) scale(0.6)"/>
+  </g>
+</svg>

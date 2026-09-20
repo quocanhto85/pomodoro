@@ -291,3 +291,317 @@
   color: #00e5ff !important;
   filter: drop-shadow(0 0 6px rgb(0 229 255 / 0.4));
 }
+
+/* ============================================================
+   KITTY PINK THEME — pastel wallpaper with bows and hearts
+
+   The classic/cyberpunk themes paint light text on a dark surface.
+   This one inverts that: the page is pale pink, so every `text-white`
+   utility is remapped to a deep plum ink and the translucent white
+   surfaces are made opaque enough to read against the wallpaper.
+
+   --kitty-accent is a space-separated RGB triplet (composes with
+   rgb(... / <alpha>)) used for tints; --kitty-deep is the solid,
+   contrast-safe variant used behind white button text. Both change
+   per timer mode so the mode is still readable at a glance.
+   ============================================================ */
+[data-theme="kitty"] {
+  --kitty-accent: 255 105 164;
+  --kitty-deep: #d6357c;
+  --kitty-ink: #7b2d52;
+  --kitty-ink-soft: #a2547a;
+  --kitty-ink-muted: #bb7ba0;
+  --kitty-wallpaper-top: #ffd6e8;
+  --kitty-wallpaper-bottom: #fff2f8;
+}
+
+[data-theme="kitty"] body {
+  background-color: #fff2f8;
+}
+
+[data-theme="kitty"] [data-mode="pomodoro"] {
+  --kitty-accent: 255 105 164;   /* bubblegum */
+  --kitty-deep: #d6357c;
+  --kitty-wallpaper-top: #ffd6e8;
+  --kitty-wallpaper-bottom: #fff2f8;
+}
+
+[data-theme="kitty"] [data-mode="shortbreak"] {
+  --kitty-accent: 77 199 174;    /* mint */
+  --kitty-deep: #10917a;
+  --kitty-wallpaper-top: #ffe3f0;
+  --kitty-wallpaper-bottom: #ebfbf5;
+}
+
+[data-theme="kitty"] [data-mode="longbreak"] {
+  --kitty-accent: 160 124 244;   /* lavender */
+  --kitty-deep: #7449d6;
+  --kitty-wallpaper-top: #ffdcef;
+  --kitty-wallpaper-bottom: #f2ecff;
+}
+
+/* Wallpaper: tiled kitty stickers over a soft vertical wash. */
+[data-theme="kitty"] [data-mode] {
+  background-color: var(--kitty-wallpaper-bottom);
+  background-image:
+    url("/themes/kitty-pattern.svg"),
+    radial-gradient(1200px 620px at 50% -12%, rgb(var(--kitty-accent) / 0.30), transparent 72%),
+    linear-gradient(180deg, var(--kitty-wallpaper-top) 0%, var(--kitty-wallpaper-bottom) 60%);
+  background-size: 190px 190px, 100% 100%, 100% 100%;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+
+/* --- Surfaces (translucent white tints become readable pastel cards) --- */
+[data-theme="kitty"] .bg-white\/10 { background-color: rgb(255 255 255 / 0.55); }
+[data-theme="kitty"] .bg-white\/15 { background-color: rgb(255 255 255 / 0.62); }
+[data-theme="kitty"] .bg-white\/20 { background-color: rgb(255 255 255 / 0.70); }
+[data-theme="kitty"] .bg-white\/25 { background-color: rgb(255 255 255 / 0.78); }
+
+/* /30 and /40 mark the selected tab / duration, so they take the accent. */
+[data-theme="kitty"] .bg-white\/30 { background-color: rgb(var(--kitty-accent) / 0.26); }
+[data-theme="kitty"] .bg-white\/40 {
+  background-color: rgb(var(--kitty-accent) / 0.34);
+  box-shadow: 0 4px 12px -4px rgb(var(--kitty-accent) / 0.6);
+}
+
+/* --- Hover / focus states --- */
+[data-theme="kitty"] .hover\:bg-white\/15:hover,
+[data-theme="kitty"] .hover\:bg-white\/20:hover,
+[data-theme="kitty"] .focus\:bg-white\/20:focus { background-color: rgb(var(--kitty-accent) / 0.20); }
+[data-theme="kitty"] .hover\:bg-white\/30:hover { background-color: rgb(var(--kitty-accent) / 0.30); }
+[data-theme="kitty"] .hover\:text-white:hover { color: #5e1f3c; }
+
+/* --- Borders --- */
+[data-theme="kitty"] .border-white\/15,
+[data-theme="kitty"] .border-white\/20,
+[data-theme="kitty"] .border-white\/25,
+[data-theme="kitty"] .border-white\/30,
+[data-theme="kitty"] .border-white\/70 { border-color: rgb(var(--kitty-accent) / 0.42); }
+
+/* --- Text: the page is light, so "white" text becomes plum ink --- */
+[data-theme="kitty"] .text-white { color: var(--kitty-ink); }
+[data-theme="kitty"] .text-white\/80,
+[data-theme="kitty"] .text-white\/85 { color: var(--kitty-ink-soft); }
+[data-theme="kitty"] .text-white\/60,
+[data-theme="kitty"] .text-white\/70 { color: var(--kitty-ink-muted); }
+[data-theme="kitty"] .placeholder\:text-white\/50::placeholder { color: #d79ab8; }
+
+/* Sign-in error banner (red on pink reads as noise — keep it in family). */
+[data-theme="kitty"] .bg-red-500\/15 { background-color: rgb(214 53 124 / 0.12); }
+[data-theme="kitty"] .border-red-300\/40 { border-color: rgb(214 53 124 / 0.38); }
+
+/* --- Opaque light cards (subject picker, dialogs, toasts) --- */
+[data-theme="kitty"] .bg-white { background-color: #fffafc !important; }
+
+/* --- Main timer panel: rounded pastel card topped with a ribbon bow --- */
+[data-theme="kitty"] .app-panel {
+  position: relative;
+  margin-top: 1.25rem;
+  border: 2px solid rgb(var(--kitty-accent) / 0.45);
+  border-radius: 28px;
+  background-color: rgb(255 255 255 / 0.66);
+  box-shadow:
+    0 20px 44px -22px rgb(var(--kitty-accent) / 0.85),
+    inset 0 0 0 4px rgb(255 255 255 / 0.55);
+}
+
+[data-theme="kitty"] .app-panel::before {
+  content: "";
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  width: 84px;
+  height: 49px;
+  transform: translateX(-50%);
+  background: url("/themes/kitty-bow.svg") center / contain no-repeat;
+  filter: drop-shadow(0 4px 6px rgb(214 53 124 / 0.25));
+  pointer-events: none;
+}
+
+/* --- Timer digits: soft embossed pink --- */
+[data-theme="kitty"] .hud-timer {
+  color: #6d2547;
+  font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 2px 0 rgb(255 255 255 / 0.95),
+    0 8px 20px rgb(var(--kitty-accent) / 0.45);
+}
+
+/* --- Action buttons (START / PAUSE / Skip): candy pill buttons --- */
+[data-theme="kitty"] .hud-action {
+  background-color: var(--kitty-deep) !important;
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0)) !important;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  border-radius: 9999px;
+  color: #ffffff !important;
+  letter-spacing: 0.06em;
+  box-shadow: 0 12px 22px -10px var(--kitty-deep);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+[data-theme="kitty"] .hud-action:hover {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 26px -10px var(--kitty-deep);
+}
+
+[data-theme="kitty"] .hud-action:active { transform: translateY(0); }
+
+/* The dialog's Cancel button (shadcn "outline" variant, identified by
+   .bg-background) stays quiet so it doesn't compete with the confirm action. */
+[data-theme="kitty"] .hud-action.bg-background {
+  background-color: #fffafc !important;
+  background-image: none !important;
+  border-color: rgb(255 105 164 / 0.55);
+  color: #a8336d !important;
+  box-shadow: 0 6px 14px -9px rgb(214 53 124 / 0.7);
+}
+
+[data-theme="kitty"] .hud-action.bg-background:hover {
+  background-color: #ffeaf3 !important;
+  filter: none;
+}
+
+/* --- Settings dropdown: dark slate card becomes a pale pink one --- */
+[data-theme="kitty"] .app-menu {
+  background-color: rgb(255 246 250 / 0.98) !important;
+  border-color: rgb(var(--kitty-accent) / 0.45) !important;
+  border-radius: 18px;
+  box-shadow: 0 20px 38px -18px rgb(214 53 124 / 0.55);
+}
+
+/* Separator + avatar fallback inside the menu. */
+[data-theme="kitty"] .app-menu .bg-white\/20 { background-color: rgb(var(--kitty-accent) / 0.32); }
+
+/* --- Subject picker popover + other light surfaces --- */
+[data-theme="kitty"] .border-gray-100,
+[data-theme="kitty"] .border-gray-200 { border-color: rgb(var(--kitty-accent) / 0.32) !important; }
+[data-theme="kitty"] .text-gray-800,
+[data-theme="kitty"] .text-gray-700,
+[data-theme="kitty"] .text-gray-600 { color: var(--kitty-ink) !important; }
+[data-theme="kitty"] .text-gray-500,
+[data-theme="kitty"] .text-gray-400 { color: var(--kitty-ink-muted) !important; }
+[data-theme="kitty"] .bg-gray-50,
+[data-theme="kitty"] .bg-gray-100 { background-color: rgb(var(--kitty-accent) / 0.10) !important; }
+[data-theme="kitty"] .hover\:bg-gray-50:hover { background-color: rgb(var(--kitty-accent) / 0.16) !important; }
+[data-theme="kitty"] .bg-rose-50 { background-color: rgb(var(--kitty-accent) / 0.16) !important; }
+[data-theme="kitty"] .text-rose-700,
+[data-theme="kitty"] .text-rose-500 { color: var(--kitty-deep) !important; }
+
+/* Solid rose buttons keep white text, so pin both against the ink remap. */
+[data-theme="kitty"] .bg-rose-500 {
+  background-color: var(--kitty-deep) !important;
+  color: #ffffff !important;
+}
+[data-theme="kitty"] .hover\:bg-rose-600:hover { background-color: var(--kitty-deep) !important; filter: brightness(0.92); }
+
+/* ============================================================
+   KITTY PINK — Report modal
+   The modal renders in a portal outside [data-mode], so it uses the
+   literal pink palette rather than the per-mode --kitty-accent.
+   ============================================================ */
+/* The report is dense, data-heavy reading, so it gets the palette but not the
+   tiled wallpaper — kitties behind a stats table hurt legibility. */
+[data-theme="kitty"] .report-modal.bg-white {
+  background-color: #fff7fb !important;
+  background-image: linear-gradient(180deg, #ffe4f0 0%, #fff7fb 32%);
+  border: 2px solid rgb(255 105 164 / 0.45);
+  border-radius: 24px;
+  box-shadow: 0 26px 56px -24px rgb(214 53 124 / 0.65);
+}
+
+/* Inner surfaces sit as near-solid cards on the pink wash. */
+[data-theme="kitty"] .report-modal .bg-white {
+  background-color: rgb(255 255 255 / 0.95) !important;
+}
+
+/* Floating dropdowns must stay fully opaque so they don't bleed
+   into the content underneath them. */
+[data-theme="kitty"] .report-modal .report-popover {
+  background-color: #fffafc !important;
+  border-color: rgb(255 105 164 / 0.35) !important;
+}
+[data-theme="kitty"] .report-modal .bg-white\/80 {
+  background-color: rgb(255 247 251 / 0.88) !important;
+}
+[data-theme="kitty"] .report-modal .bg-gray-50,
+[data-theme="kitty"] .report-modal .bg-gray-100,
+[data-theme="kitty"] .report-modal .bg-gray-50\/60 {
+  background-color: rgb(255 105 164 / 0.10) !important;
+}
+[data-theme="kitty"] .report-modal .hover\:bg-gray-50:hover,
+[data-theme="kitty"] .report-modal .hover\:bg-gray-100:hover {
+  background-color: rgb(255 105 164 / 0.16) !important;
+}
+
+/* Readable text */
+[data-theme="kitty"] .report-modal .text-gray-900 { color: #5e1f3c !important; }
+[data-theme="kitty"] .report-modal .text-gray-800 { color: #6d2547 !important; }
+[data-theme="kitty"] .report-modal .text-gray-700,
+[data-theme="kitty"] .report-modal .text-gray-600 { color: #8b4568 !important; }
+[data-theme="kitty"] .report-modal .text-gray-500,
+[data-theme="kitty"] .report-modal .text-gray-400 { color: #b57a9b !important; }
+
+/* Borders + row dividers */
+[data-theme="kitty"] .report-modal .border-b,
+[data-theme="kitty"] .report-modal .border-t,
+[data-theme="kitty"] .report-modal .border-gray-50,
+[data-theme="kitty"] .report-modal .border-gray-100,
+[data-theme="kitty"] .report-modal .border-gray-200 {
+  border-color: rgb(255 105 164 / 0.28) !important;
+}
+[data-theme="kitty"] .report-modal .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+[data-theme="kitty"] .report-modal .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(255 105 164 / 0.22) !important;
+}
+
+/* Accents (active tab, links, error text, loading spinner) */
+[data-theme="kitty"] .report-modal .text-rose-600,
+[data-theme="kitty"] .report-modal .text-rose-500,
+[data-theme="kitty"] .report-modal .group-hover\:text-rose-600:hover { color: #d6357c !important; }
+[data-theme="kitty"] .report-modal .text-red-500 { color: #e04a6e !important; }
+[data-theme="kitty"] .report-modal .before\:bg-rose-600::before { background-color: #d6357c !important; }
+[data-theme="kitty"] .report-modal .border-rose-200 { border-color: rgb(255 105 164 / 0.35) !important; }
+[data-theme="kitty"] .report-modal .border-t-rose-600 { border-top-color: #d6357c !important; }
+
+/* Table header strip */
+[data-theme="kitty"] .report-modal thead.bg-gray-50 {
+  background-color: rgb(255 105 164 / 0.16) !important;
+}
+[data-theme="kitty"] .report-modal thead .text-gray-500 {
+  color: #a8336d !important;
+}
+
+/* Highlighted stat values */
+[data-theme="kitty"] .report-modal .stat-value {
+  color: #d6357c !important;
+  font-weight: 600;
+}
+
+/* ============================================================
+   KITTY PINK — Reset-confirmation dialog
+   ============================================================ */
+[data-theme="kitty"] .hud-dialog.bg-white {
+  background-color: #fff7fb !important;
+  background-image: linear-gradient(180deg, #ffe4f0 0%, #fff7fb 55%);
+  border: 2px solid rgb(255 105 164 / 0.45) !important;
+  border-radius: 22px;
+  box-shadow: 0 24px 50px -22px rgb(214 53 124 / 0.6);
+}
+
+[data-theme="kitty"] .hud-dialog.text-gray-900 { color: #5e1f3c !important; }
+[data-theme="kitty"] .hud-dialog .text-muted-foreground { color: #8b4568 !important; }
+
+/* ============================================================
+   KITTY PINK — Error toast (Sonner)
+   ============================================================ */
+[data-theme="kitty"] .hud-error-toast-card {
+  background-color: #fffafc !important;
+  border-color: rgb(255 105 164 / 0.45) !important;
+  border-radius: 16px;
+  box-shadow: 0 18px 36px -16px rgb(214 53 124 / 0.5);
+}
+
+[data-theme="kitty"] .hud-error-title { color: #b02a63 !important; }
+[data-theme="kitty"] .hud-error-message { color: #8b4568 !important; }
+[data-theme="kitty"] .hud-error-icon { color: #e0518d !important; }

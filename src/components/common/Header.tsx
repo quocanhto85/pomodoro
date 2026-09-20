@@ -56,7 +56,7 @@ export default function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuPortal>
           <DropdownMenuContent
-            className="z-50 w-56 mt-2 p-1 rounded-lg bg-slate-900/95 backdrop-blur-xl border border-white/20 shadow-lg
+            className="app-menu z-50 w-56 mt-2 p-1 rounded-lg bg-slate-900/95 backdrop-blur-xl border border-white/20 shadow-lg
               data-[state=open]:animate-in data-[state=closed]:animate-out
               data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0
               data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95
