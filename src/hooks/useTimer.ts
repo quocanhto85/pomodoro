@@ -8,7 +8,7 @@ import {
   FocusDuration,
   STORAGE_KEYS,
 } from "@/helpers/constants";
-import { Howl } from "howler";
+import { Howl, Howler } from "howler";
 import { pomodoroService } from "@/services/api/pomodoro";
 
 // Debug logger
@@ -75,6 +75,26 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
       });
     }
   }, []);
+
+  /**
+   * iOS Safari keeps the Web Audio context suspended until it is resumed inside
+   * a user gesture, and ignores later play() calls until then. The bell only
+   * rings once the timer ends, long after any tap, so we unlock audio up front
+   * when the user presses Start.
+   */
+  const unlockAudio = useCallback(() => {
+    initializeBellSound();
+    const ctx = Howler.ctx;
+    if (!ctx) return;
+    if (ctx.state !== "running") {
+      ctx.resume().catch(() => {});
+    }
+    // Playing a one-sample silent buffer is what actually unlocks older iOS.
+    const source = ctx.createBufferSource();
+    source.buffer = ctx.createBuffer(1, 1, 22050);
+    source.connect(ctx.destination);
+    source.start(0);
+  }, [initializeBellSound]);
 
   const stopTicking = useCallback(() => {
     if (workerRef.current) {
@@ -222,6 +242,7 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
   const toggleTimer = useCallback(() => {
     if (!isRunning) {
       log("Timer starting", { mode, timeLeft, subject: activeSubjectRef.current });
+      unlockAudio();
       setIsRunning(true);
     } else {
       log("Timer paused", { mode, timeLeft });
@@ -235,7 +256,7 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
       cleanupTimer();
       setIsRunning(false);
     }
-  }, [isRunning, timeLeft, mode, cleanupTimer]);
+  }, [isRunning, timeLeft, mode, cleanupTimer, unlockAudio]);
 
   const handleSkip = useCallback(() => {
     log("Timer skipped", { mode, timeLeft });
