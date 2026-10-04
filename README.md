@@ -26,7 +26,7 @@ One bit I'm a little proud of: the countdown runs inside a Web Worker (`public/t
 - NextAuth for Google sign-in
 - MongoDB, through both Mongoose and the native driver
 - Chart.js and Recharts for the report charts
-- Howler for the bell
+- A plain HTML `<audio>` element for the bell (see `src/lib/bell.ts` for why not Web Audio)
 
 ## Running it locally
 
@@ -80,7 +80,7 @@ src/
   providers/      Auth, Redux and Theme context
   hooks/          useTimer and the smaller hooks
   helpers/        constants and little utilities
-public/           bell_sound.wav and the timer Web Worker
+public/           bell_sound.mp3 and the timer Web Worker
 server.ts         a Socket.io server that only runs in local dev
 ```
 

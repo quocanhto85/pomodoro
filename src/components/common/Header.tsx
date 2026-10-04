@@ -1,12 +1,13 @@
 "use client";
 
 import Button from "./Button";
-import { ChartLine, Check, Settings, User, LogOut, Palette } from "lucide-react";
-import { useState } from "react";
+import { ChartLine, Check, Settings, User, LogOut, Palette, Bell, BellRing, Timer } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { ReportModal } from "@/components/report/ReportModal";
 import { useTheme } from "@/providers/ThemeProvider";
 import { THEMES, ThemeId } from "@/helpers/constants";
+import { playBell, unlockBell } from "@/lib/bell";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -26,6 +27,37 @@ export default function Header() {
   const handleLogout = () => {
     signOut({ callbackUrl: "/auth/login" });
   };
+
+  // Sound test, mainly for iPhone where the bell is easy to block.
+  const [bellStatus, setBellStatus] = useState<string | null>(null);
+  const bellTestTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (bellTestTimeoutRef.current) clearTimeout(bellTestTimeoutRef.current);
+  }, []);
+
+  const ringBell = () => {
+    playBell()
+      .then(() => setBellStatus("Rang. No sound? Turn the volume up."))
+      .catch((error: Error) => setBellStatus(`Blocked: ${error.name} - ${error.message}`));
+  };
+
+  const testBellNow = () => {
+    setBellStatus("Ringing...");
+    ringBell();
+  };
+
+  // Mirrors a real session: the tap only unlocks the bell (like pressing
+  // Start), then it rings later with no tap involved (like the timer ending).
+  const testBellDelayed = () => {
+    if (bellTestTimeoutRef.current) clearTimeout(bellTestTimeoutRef.current);
+    unlockBell();
+    setBellStatus("Ringing in 5s. Keep this page open.");
+    bellTestTimeoutRef.current = setTimeout(ringBell, 5000);
+  };
+
+  const menuItemClass = `group flex items-center px-3 py-2 text-white rounded-md cursor-pointer outline-none
+    transition-all duration-200 ease-in-out hover:bg-white/20 focus:bg-white/20`;
 
   return (
     <header className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 flex justify-between items-center gap-2">
@@ -108,9 +140,31 @@ export default function Header() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator className="my-1 h-px bg-white/20" />
+            <div className="flex items-center gap-2 px-3 py-1.5 text-white/70 text-xs font-semibold uppercase tracking-wider">
+              <Bell className="h-3.5 w-3.5" />
+              <span>Sound</span>
+            </div>
+            {/* preventDefault keeps the menu open so the result stays visible. */}
             <DropdownMenuItem
-              className="group flex items-center px-3 py-2 text-white rounded-md cursor-pointer outline-none
-                transition-all duration-200 ease-in-out hover:bg-white/20 focus:bg-white/20"
+              className={menuItemClass}
+              onSelect={(e) => { e.preventDefault(); testBellNow(); }}
+            >
+              <BellRing className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              <span className="transition-transform duration-200 group-hover:translate-x-0.5">Test bell now</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className={menuItemClass}
+              onSelect={(e) => { e.preventDefault(); testBellDelayed(); }}
+            >
+              <Timer className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              <span className="transition-transform duration-200 group-hover:translate-x-0.5">Test bell in 5s</span>
+            </DropdownMenuItem>
+            {bellStatus && (
+              <p className="px-3 pb-2 pt-1 text-xs text-white/60 break-words" role="status">{bellStatus}</p>
+            )}
+            <DropdownMenuSeparator className="my-1 h-px bg-white/20" />
+            <DropdownMenuItem
+              className={menuItemClass}
               onClick={handleLogout}
             >
               <LogOut className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
