@@ -50,7 +50,6 @@
     "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.5.1",
-    "howler": "^2.2.4",
     "input-otp": "^1.4.1",
     "kill-port": "^2.0.1",
     "lucide-react": "^0.468.0",
@@ -81,7 +80,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/chart.js": "^2.9.41",
-    "@types/howler": "^2.2.12",
     "@types/node": "^20",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",

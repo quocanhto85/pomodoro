@@ -8,8 +8,8 @@ import {
   FocusDuration,
   STORAGE_KEYS,
 } from "@/helpers/constants";
-import { Howl, Howler } from "howler";
 import { pomodoroService } from "@/services/api/pomodoro";
+import { playBell, unlockBell } from "@/lib/bell";
 
 // Debug logger
 const DEBUG = true;
@@ -44,7 +44,6 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
 
 
   const endTimeRef = useRef<number | null>(null);
-  const bellSoundRef = useRef<Howl | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const fallbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -66,35 +65,6 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COMPLETED_POMODOROS, completedPomodoros.toString());
   }, [completedPomodoros]);
-
-  const initializeBellSound = useCallback(() => {
-    if (!bellSoundRef.current) {
-      bellSoundRef.current = new Howl({
-        src: ["/bell_sound.wav"],
-        volume: 1.0,
-      });
-    }
-  }, []);
-
-  /**
-   * iOS Safari keeps the Web Audio context suspended until it is resumed inside
-   * a user gesture, and ignores later play() calls until then. The bell only
-   * rings once the timer ends, long after any tap, so we unlock audio up front
-   * when the user presses Start.
-   */
-  const unlockAudio = useCallback(() => {
-    initializeBellSound();
-    const ctx = Howler.ctx;
-    if (!ctx) return;
-    if (ctx.state !== "running") {
-      ctx.resume().catch(() => {});
-    }
-    // Playing a one-sample silent buffer is what actually unlocks older iOS.
-    const source = ctx.createBufferSource();
-    source.buffer = ctx.createBuffer(1, 1, 22050);
-    source.connect(ctx.destination);
-    source.start(0);
-  }, [initializeBellSound]);
 
   const stopTicking = useCallback(() => {
     if (workerRef.current) {
@@ -163,13 +133,12 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
       cleanupTimer();
       setTimeLeft(0);
       setIsRunning(false);
-      initializeBellSound();
-      bellSoundRef.current?.play();
+      playBell().catch((error) => log("Bell blocked", error));
       handleTimerComplete();
     } else {
       setTimeLeft(remaining);
     }
-  }, [cleanupTimer, initializeBellSound, handleTimerComplete]);
+  }, [cleanupTimer, handleTimerComplete]);
 
   // Create the Web Worker once on mount, tear it down on unmount
   useEffect(() => {
@@ -242,7 +211,8 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
   const toggleTimer = useCallback(() => {
     if (!isRunning) {
       log("Timer starting", { mode, timeLeft, subject: activeSubjectRef.current });
-      unlockAudio();
+      // iOS only lets the bell ring later if it was unlocked inside this tap.
+      unlockBell();
       setIsRunning(true);
     } else {
       log("Timer paused", { mode, timeLeft });
@@ -256,7 +226,7 @@ export default function useTimer(activeSubject: string, focusDuration: FocusDura
       cleanupTimer();
       setIsRunning(false);
     }
-  }, [isRunning, timeLeft, mode, cleanupTimer, unlockAudio]);
+  }, [isRunning, timeLeft, mode, cleanupTimer]);
 
   const handleSkip = useCallback(() => {
     log("Timer skipped", { mode, timeLeft });
