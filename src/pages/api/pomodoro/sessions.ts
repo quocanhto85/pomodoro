@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/db/mongodb/client";
 import { getUserIdFromRequest } from "@/lib/auth";
+import { resolveReportOwner } from "@/lib/admin";
 
 export default async function handler(
     req: NextApiRequest,
@@ -11,15 +12,22 @@ export default async function handler(
     }
   
     try {
-      const userId = await getUserIdFromRequest(req, res);
-      if (!userId) {
+      const callerId = await getUserIdFromRequest(req, res);
+      if (!callerId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       const client = await clientPromise;
       const db = client.db("pomodoro_app");
-  
-      const { month, year } = req.query;
+
+      const { month, year, user } = req.query;
+
+      // An admin may pass another user's ranking handle to read their days.
+      const owner = await resolveReportOwner(db, callerId, user);
+      if (!owner.ok) {
+        return res.status(owner.status).json({ message: owner.message });
+      }
+      const { userId } = owner;
   
       // Validate month and year
       const monthNum = parseInt(month as string);

@@ -18,11 +18,12 @@ export const pomodoroService = {
     }
   },
 
-  getDailySessions: async (month: number, year: number) => {
+  // `userHandle` (admins only) reads another user's report instead of your own.
+  getDailySessions: async (month: number, year: number, userHandle?: string) => {
     try {
       const response = await axios.get("/api/pomodoro/sessions", {
         params: {
-          month, year
+          month, year, user: userHandle
         }
       });
       return response.data;
@@ -32,10 +33,11 @@ export const pomodoroService = {
     }
   },
 
-  fetchStats: async (selectedYear: number) => {
+  fetchStats: async (selectedYear: number, userHandle?: string) => {
     try {
       const response = await axios.post("/api/pomodoro/stats", {
-        year: selectedYear
+        year: selectedYear,
+        user: userHandle
       });
       return response.data;
     } catch (error) {

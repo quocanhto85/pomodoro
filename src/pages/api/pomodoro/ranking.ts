@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/db/mongodb/client";
 import { getUserIdFromRequest } from "@/lib/auth";
+import { isAdmin } from "@/lib/admin";
 import { RankingFacet, buildRanking, rankingPipeline } from "@/lib/ranking";
 
 /**
@@ -10,6 +11,7 @@ import { RankingFacet, buildRanking, rankingPipeline } from "@/lib/ranking";
  * caller's own rows: comparing users is the entire feature. What crosses the
  * wire is aggregate counts plus a domain-stripped display name — never a raw
  * user id, and nothing about what someone studied beyond their top subject.
+ * The one exception is admins, who also get every user's subject split.
  */
 export default async function handler(
   req: NextApiRequest,
@@ -41,9 +43,14 @@ export default async function handler(
       .aggregate(rankingPipeline(startDate, endDate))
       .toArray();
 
+    const viewerIsAdmin = isAdmin(currentUserId);
+
     return res.status(200).json({
       year,
-      users: buildRanking(facet as RankingFacet, currentUserId)
+      users: buildRanking(facet as RankingFacet, currentUserId, {
+        includeAllSubjects: viewerIsAdmin
+      }),
+      viewerIsAdmin
     });
   } catch (error) {
     console.error("Error fetching pomodoro ranking:", error);

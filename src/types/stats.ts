@@ -62,6 +62,11 @@ export function getSubjectColor(index: number): string {
 // Ranking
 // ---------------------------------------------------------------------------
 
+export interface SubjectTotal {
+    subject: string;
+    pomodoros: number;
+}
+
 export interface UserRanking {
     /** Opaque, stable handle. The raw user id never reaches the client. */
     id: string;
@@ -74,12 +79,26 @@ export interface UserRanking {
     bestDay: number;
     longestStreak: number;
     topSubject: string | null;
+    /**
+     * Every subject this year, largest first. Sent for the reader's own row,
+     * and for every row when the reader is an admin.
+     */
+    subjects?: SubjectTotal[];
     monthlyPomodoros: number[]; // 12-element array
 }
 
 export interface RankingData {
     year: number;
     users: UserRanking[];
+    /** Whether the reader may open other users' full reports. */
+    viewerIsAdmin: boolean;
+}
+
+/** Someone other than the signed-in user whose report is on screen. */
+export interface ViewedUser {
+    /** The opaque handle from the ranking. */
+    id: string;
+    name: string;
 }
 
 export type RankingMetricId =

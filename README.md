@@ -10,7 +10,7 @@ Live version: https://pomodoro-green-chi.vercel.app
 - Pick your focus length. Go with 25 minutes for classic Pomodoro, 50 if you want longer deep-work blocks (a 50 counts as two pomodoros), or drop into a plain count-up stopwatch when you don't feel like a fixed timer.
 - Tag each session with a subject (Work, AI, Math, whatever you're on) so the stats aren't just one big undifferentiated pile.
 - A reports view with Summary and Detail tabs: total pomodoros, hours focused, how many days you actually showed up, and a monthly focus-hours chart.
-- A Ranking tab that puts everyone who uses the app side by side. It ranks on four things — focus hours, active days, best single day and longest streak — because ranking on volume alone just rewards whoever has the most free time. Each of the four tiles names its current champion and re-sorts the board when you tap it.
+- A Ranking tab that puts everyone who uses the app side by side. It ranks on four things — focus hours, active days, best single day and longest streak — because ranking on volume alone just rewards whoever has the most free time. Each of the four tiles names its current champion and re-sorts the board when you tap it. You can expand your own row to see your hours per subject; admins can do that for everyone, and open anyone's full Summary and Detail.
 - Three themes. Classic Red, a darker Cyberpunk HUD, and a pastel Kitty Pink one, and your pick sticks between visits.
 - Sign in with Google. Nothing to remember, and the session stays put after you close the tab.
 - A bell rings when a block ends, the browser tab title counts down while you work, and the favicon changes so you can tell at a glance whether the timer is running.
@@ -59,6 +59,7 @@ Everything lives in `.env.local`, and you don't need to wrap the values in quote
 | `GOOGLE_CLIENT_SECRET` | Same place |
 | `ALLOWED_EMAILS` | Optional. Comma-separated allowlist. Leave it empty to let any Google account sign in |
 | `OWNER_EMAIL` / `OWNER_USER_ID` | Optional. Pins a specific account to a fixed data id |
+| `ADMIN_USER_IDS` | Optional. Comma-separated user ids or emails who can see everyone's study details. Defaults to the owner |
 
 ### Setting up Google sign-in
 

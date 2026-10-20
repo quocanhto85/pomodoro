@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Crown, Flame, Sparkles, Trophy } from "lucide-react";
+import { ArrowRight, ChevronDown, Crown, Flame, Sparkles, Trophy } from "lucide-react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { pomodoroService } from "@/services/api/pomodoro";
 import { showErrorToast } from "@/components/common";
@@ -9,7 +9,9 @@ import { MINUTES_PER_POMODORO } from "@/helpers/constants";
 import {
   RANKING_METRICS,
   RankingMetricId,
+  SubjectTotal,
   UserRanking,
+  ViewedUser,
   getUserColor
 } from "@/types/stats";
 import { YearPicker } from "./YearPicker";
@@ -28,13 +30,65 @@ function initialOf(name: string): string {
   return [...name][0]?.toUpperCase() ?? "?";
 }
 
-export function Ranking() {
+function toHours(pomodoros: number): string {
+  return ((pomodoros * MINUTES_PER_POMODORO) / 60).toFixed(1);
+}
+
+/** Stopwatch sessions log fractional pomodoros; two places is plenty. */
+function formatPomodoros(pomodoros: number): string {
+  return Number(pomodoros.toFixed(2)).toString();
+}
+
+interface SubjectSplitProps {
+  subjects: SubjectTotal[];
+  totalPomodoros: number;
+  color: string;
+}
+
+/** One user's year, subject by subject — the detail a single total hides. */
+function SubjectSplit({ subjects, totalPomodoros, color }: SubjectSplitProps) {
+  return (
+    <ul className="mt-2.5 space-y-2">
+      {subjects.map((entry) => {
+        const share = totalPomodoros > 0 ? (entry.pomodoros / totalPomodoros) * 100 : 0;
+
+        return (
+          <li key={entry.subject}>
+            <div className="flex items-baseline justify-between gap-3 text-[11px] sm:text-xs">
+              <span className="min-w-0 truncate text-gray-700">{entry.subject}</span>
+              <span className="shrink-0 text-gray-500">
+                <span className="font-semibold text-gray-900">{toHours(entry.pomodoros)} hrs</span>
+                {" · "}
+                {formatPomodoros(entry.pomodoros)} pomos · {Math.round(share)}%
+              </span>
+            </div>
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-sm bg-gray-100">
+              <div
+                className="h-full rounded-r-[3px]"
+                style={{ width: `${Math.max(share, 1)}%`, backgroundColor: color }}
+              />
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+interface RankingProps {
+  /** Opens a user's Summary and Detail for the given year. Admins only. */
+  onViewUser?: (user: ViewedUser, year: number) => void;
+}
+
+export function Ranking({ onViewUser }: RankingProps) {
   const { theme } = useTheme();
   const isDark = theme === "cyberpunk";
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [metricId, setMetricId] = useState<RankingMetricId>("hours");
   const [users, setUsers] = useState<UserRanking[]>([]);
+  const [viewerIsAdmin, setViewerIsAdmin] = useState(false);
+  const [openRows, setOpenRows] = useState<Set<string>>(() => new Set());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -44,7 +98,10 @@ export function Ranking() {
       setIsLoading(true);
       try {
         const response = await pomodoroService.getRanking(selectedYear);
-        if (!cancelled) setUsers(response.users ?? []);
+        if (!cancelled) {
+          setUsers(response.users ?? []);
+          setViewerIsAdmin(response.viewerIsAdmin === true);
+        }
       } catch (error) {
         console.error("Error fetching ranking:", error);
         if (!cancelled) {
@@ -83,6 +140,13 @@ export function Ranking() {
 
   const leader = ranked[0];
   const leaderValue = leader?.metricValue ?? 0;
+
+  const toggleRow = (id: string) =>
+    setOpenRows((previous) => {
+      const next = new Set(previous);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
 
   if (isLoading) {
     return (
@@ -161,7 +225,10 @@ export function Ranking() {
               const color = getUserColor(user.colorIndex, isDark);
               const share = leaderValue > 0 ? (user.metricValue / leaderValue) * 100 : 0;
               const gap = leaderValue - user.metricValue;
-              const hours = ((user.totalPomodoros * MINUTES_PER_POMODORO) / 60).toFixed(1);
+              const hours = toHours(user.totalPomodoros);
+              const subjects = user.subjects ?? [];
+              const isOpen = openRows.has(user.id);
+              const canOpenReport = viewerIsAdmin && !user.isCurrentUser && !!onViewUser;
 
               return (
                 <div
@@ -258,6 +325,43 @@ export function Ranking() {
                       </span>
                     )}
                   </div>
+
+                  {(subjects.length > 0 || canOpenReport) && (
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-gray-100 pt-2.5 text-[11px] sm:text-xs font-medium">
+                      {subjects.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => toggleRow(user.id)}
+                          aria-expanded={isOpen}
+                          className="inline-flex items-center gap-1 text-rose-600 hover:underline"
+                        >
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                            aria-hidden="true"
+                          />
+                          {isOpen ? "Hide" : "Show"} subject hours ({subjects.length})
+                        </button>
+                      )}
+                      {canOpenReport && (
+                        <button
+                          type="button"
+                          onClick={() => onViewUser?.({ id: user.id, name: user.name }, selectedYear)}
+                          className="inline-flex items-center gap-1 text-rose-600 hover:underline"
+                        >
+                          Full report
+                          <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {isOpen && subjects.length > 0 && (
+                    <SubjectSplit
+                      subjects={subjects}
+                      totalPomodoros={user.totalPomodoros}
+                      color={color}
+                    />
+                  )}
                 </div>
               );
             })}
