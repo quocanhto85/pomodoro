@@ -7,14 +7,19 @@ import { AppDispatch, RootState } from "@/store/store";
 import { fetchDailyStats } from "@/store/statsSlice";
 import ERROR_MESSAGES from "@/constants/message";
 
-export function DailyStats() {
+interface DailyStatsProps {
+  /** Ranking handle of another user to show (admins only); omit for your own. */
+  userHandle?: string;
+}
+
+export function DailyStats({ userHandle }: DailyStatsProps) {
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const dispatch = useDispatch<AppDispatch>();
   const { dailyStats, loading, error } = useSelector((state: RootState) => state.stats);
 
   useEffect(() => {
-    dispatch(fetchDailyStats(currentMonth));
-  }, [currentMonth, dispatch]);
+    dispatch(fetchDailyStats({ date: currentMonth, userHandle }));
+  }, [currentMonth, userHandle, dispatch]);
 
   const filteredData = dailyStats.filter(record => {
     const recordDate = new Date(record.date);

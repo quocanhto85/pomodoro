@@ -16,11 +16,11 @@ const initialState: StatsState = {
 
 export const fetchDailyStats = createAsyncThunk(
   "stats/fetchDailyStats", // This is just an action identifier for Redux
-  async (date: Date) => {
+  async ({ date, userHandle }: { date: Date; userHandle?: string }) => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
     
-    const response = await pomodoroService.getDailySessions(month, year);
+    const response = await pomodoroService.getDailySessions(month, year, userHandle);
     
     // Group sessions by date, then aggregate by subject within each date
     const dateMap = new Map<string, {

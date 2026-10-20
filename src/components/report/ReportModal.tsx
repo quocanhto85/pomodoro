@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import { MonthlyStats } from "./MonthlyStats";
 import { DailyStats } from "./DailyStats";
 import { ActivitySummary } from "./ActivitiySummary";
@@ -11,7 +11,7 @@ import { store } from "@/store/store";
 import { useState, useEffect } from "react";
 import { pomodoroService } from "@/services/api/pomodoro";
 import { showErrorToast } from "@/components/common";
-import { StatsData, MonthlySubjectData } from "@/types/stats";
+import { StatsData, MonthlySubjectData, ViewedUser } from "@/types/stats";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -24,7 +24,32 @@ const tabs = [
   { id: "ranking", label: "Ranking" }
 ];
 
+/** Keeps it obvious, on every tab it applies to, whose numbers these are. */
+function ViewingBanner({ user, onExit }: { user: ViewedUser; onExit: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm">
+      <span className="flex min-w-0 items-center gap-2 text-gray-700">
+        <Eye className="w-4 h-4 shrink-0 text-rose-600" aria-hidden="true" />
+        <span className="truncate">
+          Viewing <span className="font-semibold text-gray-900">{user.name}</span>
+        </span>
+      </span>
+      <button
+        type="button"
+        onClick={onExit}
+        className="shrink-0 text-xs font-medium text-rose-600 hover:underline"
+      >
+        Back to mine
+      </button>
+    </div>
+  );
+}
+
 export function ReportModal({ isOpen, onClose }: ReportModalProps) {
+  const [activeTab, setActiveTab] = useState("summary");
+  // Set only by an admin opening someone's report from the Ranking tab; the
+  // server re-checks admin rights on every request regardless.
+  const [viewedUser, setViewedUser] = useState<ViewedUser | null>(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [loadingStates, setLoadingStates] = useState({
     summary: false,
@@ -38,11 +63,16 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
     monthlyBySubject: {}
   });
 
+  const viewedUserHandle = viewedUser?.id;
+
   useEffect(() => {
+    let cancelled = false;
+
     const loadData = async () => {
       setLoadingStates(prev => ({ ...prev, summary: true }));
       try {
-        const response = await pomodoroService.fetchStats(selectedYear);
+        const response = await pomodoroService.fetchStats(selectedYear, viewedUserHandle);
+        if (cancelled) return;
         setStatsData({
           totalPomodoros: response.totalPomodoros,
           monthlyPomodoros: response.monthlyPomodoros,
@@ -50,26 +80,49 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
           monthlyBySubject: (response.monthlyBySubject || {}) as MonthlySubjectData
         });
       } catch (error) {
+        if (cancelled) return;
         console.error("Error fetching statistics:", error);
         showErrorToast({
           message: "Unable to load statistics. Please try again later."
         });
       } finally {
-        setLoadingStates(prev => ({ ...prev, summary: false }));
+        if (!cancelled) setLoadingStates(prev => ({ ...prev, summary: false }));
       }
     };
     if (isOpen) {
       loadData();
     }
-  }, [selectedYear, isOpen]);
+    // Switching whose report is shown can land responses out of order; a late
+    // one must never paint another person's numbers under the wrong name.
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedYear, isOpen, viewedUserHandle]);
+
+  const openUserReport = (user: ViewedUser, year: number) => {
+    setViewedUser(user);
+    setSelectedYear(year);
+    setActiveTab("summary");
+  };
+
+  // Every open starts on your own Summary, as it did before tabs were controlled.
+  const handleClose = () => {
+    onClose();
+    setActiveTab("summary");
+    setViewedUser(null);
+  };
+
+  const viewingBanner = viewedUser && (
+    <ViewingBanner user={viewedUser} onExit={() => setViewedUser(null)} />
+  );
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
       <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-6">
         <DialogPanel className="report-modal w-full max-w-4xl bg-white rounded-xl shadow-xl h-[90vh] overflow-hidden flex flex-col">
-          <Tabs defaultValue="summary" className="w-full h-full flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
             <div className="flex-none border-b border-gray-200">
               <div className="flex items-center justify-between px-6">
                 <TabsList className="border-none">
@@ -84,7 +137,7 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
                   ))}
                 </TabsList>
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="ml-4 p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <X size={20} />
@@ -104,6 +157,8 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
                     </div>
                   )}
 
+                  {viewingBanner}
+
                   <div className="flex justify-center mb-4 sm:mb-6">
                     <YearPicker value={selectedYear} onChange={setSelectedYear} />
                   </div>
@@ -117,14 +172,15 @@ export function ReportModal({ isOpen, onClose }: ReportModalProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="detail">
+              <TabsContent value="detail" className="space-y-4">
+                {viewingBanner}
                 <Provider store={store}>
-                  <DailyStats />
+                  <DailyStats userHandle={viewedUserHandle} />
                 </Provider>
               </TabsContent>
 
               <TabsContent value="ranking" className="mt-0">
-                <Ranking />
+                <Ranking onViewUser={openUserReport} />
               </TabsContent>
             </div>
           </Tabs>
